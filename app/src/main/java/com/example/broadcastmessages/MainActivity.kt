@@ -1,13 +1,12 @@
 package com.example.broadcastmessages
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.widget.EditText
 import android.R
-import android.os.Build
-import android.view.View
-import android.widget.Button
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import androidx.appcompat.app.AppCompatActivity
+import com.example.broadcastmessages.databinding.ActivityListItemBinding
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,20 +23,39 @@ class MainActivity : AppCompatActivity() {
         const val FLAG_RECEIVER_INCLUDE_BACKGROUND: Int = 0x01000000
     }
 
-    lateinit var binding: MainActivityBinding
+    lateinit var binding: ActivityListItemBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(R.layout.activity_list_item)
+        binding = ActivityListItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initButtonSend();
+        initButtonSend()
 
     }
 
+
+
+    @SuppressLint("WrongConstant")
     private fun initButtonSend() {
-       
+        val message: Editable? = binding.textMessage.text
+        binding.buttonSend.setOnClickListener {
+            // Формируем интент
+            val msg: String = message.toString()
+            val intent = Intent()
+            // Укажем ACTION, по которому будем ловить сообщение
+            intent.action = ACTION_SEND_MSG
+            // Добавим параметр.
+            intent.putExtra(NAME_MSG, msg)
+            // Указываем флаг поднятия приложения
+            // (без него будут получать уведомления только
+            // загруженные приложения)
+            intent.addFlags(FLAG_RECEIVER_INCLUDE_BACKGROUND)
+            // Отправка сообщения
+            sendBroadcast(intent)
+
+        }
 
     }
 }
